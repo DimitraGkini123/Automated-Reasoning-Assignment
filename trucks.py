@@ -49,6 +49,14 @@ s.add(prittles_in_trucks >= 5)
 #nuzzles
 nuzzles_in_trucks = Sum( (If(N[i]>0,1,0) for i in range(trucks)))
 s.add(nuzzles_in_trucks == 2)
+
+
+
+#b 
+#crottles_in_truck = Sum( ( If(C[i]>0,1,0)) for i in range(trucks)) # se posa trucks exoume crottles
+for i in range(trucks):
+    s.add(C[i]>0,D[i]>=2)
+
 print(s.check()) #checks if its sat or unsat 
 
 s.maximize(Sum(D))
@@ -58,6 +66,3 @@ result = s.check()
 m = s.model()
 print(m.eval(sum(D)))
 print(m)
-
-
-
