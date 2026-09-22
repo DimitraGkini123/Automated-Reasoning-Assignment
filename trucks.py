@@ -51,11 +51,13 @@ nuzzles_in_trucks = Sum( (If(N[i]>0,1,0) for i in range(trucks)))
 s.add(nuzzles_in_trucks == 2)
 print(s.check()) #checks if its sat or unsat 
 
+s.maximize(Sum(D))
+
+result = s.check()
+
 m = s.model()
-
+print(m.eval(sum(D)))
 print(m)
-
-
 
 
 
