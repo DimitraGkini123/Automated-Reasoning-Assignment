@@ -17,7 +17,7 @@ W_d = 600
 #total Weight of each truck 
 W = [Int(f"W{i}") for i in range(1, trucks+1)]
 
-s=Solver() #vriskei lush 
+s=Optimize() #vriskei lush 
 #o=Optimize() #kalyterh lush 
 
 #ksekiname apo to oti ola einai thetika.
@@ -29,7 +29,7 @@ for i in range(trucks):
     s.add(D[i] >= 0 )
 
 #quantity of each product
-    s.add(Sum(N)==6)  
+    s.add(Sum(N) == 6)  
     s.add(Sum(P) == 12)
     s.add(Sum(S) == 15)
     s.add(Sum(C) == 8)
@@ -46,6 +46,9 @@ for i in range(trucks):
 prittles_in_trucks = Sum( (If(P[i]>0,1,0) for i in range(trucks)) )
 s.add(prittles_in_trucks >= 5)
 
+#nuzzles
+nuzzles_in_trucks = Sum( (If(N[i]>0,1,0) for i in range(trucks)))
+s.add(nuzzles_in_trucks == 2)
 print(s.check()) #checks if its sat or unsat 
 
 m = s.model()
