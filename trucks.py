@@ -29,10 +29,10 @@ for i in range(trucks):
     s.add(D[i] >= 0 )
 
 #quantity of each product
-    s.add(Sum(N) == 6)  
-    s.add(Sum(P) == 12)
-    s.add(Sum(S) == 15)
-    s.add(Sum(C) == 8)
+s.add(Sum(N) == 6)  
+s.add(Sum(P) == 12)
+s.add(Sum(S) == 15)
+s.add(Sum(C) == 8)
 
 for i in range(trucks):
     s.add( W[i] == W_n * N[i] + W_p * P[i] + W_s * S[i] + W_c * C[i] + W_d * D[i] ) 
@@ -48,21 +48,26 @@ s.add(prittles_in_trucks >= 5)
 
 #nuzzles
 nuzzles_in_trucks = Sum( (If(N[i]>0,1,0) for i in range(trucks)))
-s.add(nuzzles_in_trucks == 2)
+s.add(nuzzles_in_trucks <= 2)
 
+s.maximize(Sum(D))
+print(s.check()) #checks if its sat or unsat 
 
+if s.check() == sat :
+    print("a)Maximum Dupples:")
+    m = s.model()
+    print(m.eval(sum(D)))
 
 #b 
 #crottles_in_truck = Sum( ( If(C[i]>0,1,0)) for i in range(trucks)) # se posa trucks exoume crottles
 for i in range(trucks):
-    s.add(C[i]>0,D[i]>=2)
+    s.add(Implies( C[i]>0,D[i]>=2) ) # implies is ==>. If C[i]>0 then D[i] must be >=2
 
+#We want to find the maximum number od Ds
+s.maximize(Sum(D))
 print(s.check()) #checks if its sat or unsat 
 
-s.maximize(Sum(D))
-
-result = s.check()
-
-m = s.model()
-print(m.eval(sum(D)))
-print(m)
+if s.check() == sat :
+    print("b)Maximum Dupples:")
+    m = s.model()
+    print(m.eval(sum(D)))
