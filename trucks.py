@@ -9,7 +9,7 @@ D = [Int(f"D{i}") for i in range(1, trucks+1)]
 
 #define the weights
 W_n = 800
-W_p = 40
+W_p = 405
 W_s = 500
 W_c = 2500
 W_d = 600
@@ -28,9 +28,8 @@ for i in range(trucks):
     s.add(C[i] >= 0 )
     s.add(D[i] >= 0 )
 
-#gia kathe truck exoume periorismo sto plithos
-for i in range(trucks):
-    s.add(Sum(N)==6)  #nuzzles are 6
+#quantity of each product
+    s.add(Sum(N)==6)  
     s.add(Sum(P) == 12)
     s.add(Sum(S) == 15)
     s.add(Sum(C) == 8)
@@ -42,6 +41,10 @@ for i in range(trucks):
 #every truck can fit max 10 objects
 for i in range(trucks):
     s.add( Sum(N[i],P[i],S[i],C[i],D[i]) <= 10)
+
+#prittles--> toul se 5 trucks ara an metrhsw ta trucks pou exoun P prepei na einai >=5
+prittles_in_trucks = Sum( (If(P[i]>0,1,0) for i in range(trucks)) )
+s.add(prittles_in_trucks >= 5)
 
 print(s.check()) #checks if its sat or unsat 
 
