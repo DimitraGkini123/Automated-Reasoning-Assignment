@@ -46,9 +46,9 @@ for i in range(trucks):
 prittles_in_trucks = Sum( (If(P[i]>0,1,0) for i in range(trucks)) )
 s.add(prittles_in_trucks >= 5)
 
-#nuzzles
-nuzzles_in_trucks = Sum( (If(N[i]>0,1,0) for i in range(trucks)))
-s.add(nuzzles_in_trucks <= 2)
+#skipples
+skipples_in_trucks = Sum( (If(S[i]>0,1,0) for i in range(trucks)))
+s.add(skipples_in_trucks <= 2)
 
 s.maximize(Sum(D))
 print(s.check()) #checks if its sat or unsat 
@@ -60,14 +60,16 @@ if s.check() == sat :
 
 #b 
 #crottles_in_truck = Sum( ( If(C[i]>0,1,0)) for i in range(trucks)) # se posa trucks exoume crottles
+
 for i in range(trucks):
-    s.add(Implies( C[i]>0,D[i]>=2) ) # implies is ==>. If C[i]>0 then D[i] must be >=2
+    s.add(Implies( C[i]>0,D[i]>=2)) # implies is ==>. If C[i]>0 then D[i] must be >=2
 
 #We want to find the maximum number od Ds
 s.maximize(Sum(D))
 print(s.check()) #checks if its sat or unsat 
 
 if s.check() == sat :
-    print("b)Maximum Dupples:")
+    print("b)Maximum Dupples for b:")
     m = s.model()
     print(m.eval(sum(D)))
+    print(m)
