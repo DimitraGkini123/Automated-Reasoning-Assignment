@@ -43,12 +43,15 @@ for i in range(trucks):
     s.add( Sum(N[i],P[i],S[i],C[i],D[i]) <= 10)
 
 #prittles--> toul se 5 trucks ara an metrhsw ta trucks pou exoun P prepei na einai >=5
-prittles_in_trucks = Sum( (If(P[i]>0,1,0) for i in range(trucks)) )
-s.add(prittles_in_trucks >= 5)
+for i in range(trucks):
+    for j in range(i + 1, trucks):
+        s.add(Or(P[i] > 0, P[j] > 0))
 
 #skipples
-skipples_in_trucks = Sum( (If(S[i]>0,1,0) for i in range(trucks)))
-s.add(skipples_in_trucks <= 2)
+for i in range(trucks):
+    for j in range(i + 1, trucks):
+        for k in range(j + 1, trucks):
+            s.add(Not(And(S[i] > 0, S[j] > 0, S[k] > 0)))
 
 s.maximize(Sum(D))
 print(s.check()) #checks if its sat or unsat 
@@ -57,6 +60,7 @@ if s.check() == sat :
     print("a)Maximum Dupples:")
     m = s.model()
     print(m.eval(sum(D)))
+    print(m)
 
 #b 
 #crottles_in_truck = Sum( ( If(C[i]>0,1,0)) for i in range(trucks)) # se posa trucks exoume crottles
