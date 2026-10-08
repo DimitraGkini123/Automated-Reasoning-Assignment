@@ -1,6 +1,7 @@
 import re
 import sys
 from oxidd.bdd import BDDManager, BDDFunction
+from pysat.formula import CNF
 
 
 def read_dimacs(path):
@@ -69,7 +70,13 @@ def build_bdd(path):
     return mgr, var_of, f, n
 
 if __name__ == "__main__":
-    path = sys.argv[1] if len(sys.argv) > 1 else "/Users/antonitaarvanitaki/Downloads/conf-dimacs/toybox.dimacs"   # no argument needed any more
+    #path = sys.argv[1] if len(sys.argv) > 1 else "/Users/antonitaarvanitaki/Downloads/conf-dimacs/toybox.dimacs"   # no argument needed any more
+
+    cnf = CNF(from_file="/Users/antonitaarvanitaki/Downloads/conf-dimacs/toybox.dimacs")
+    n = cnf.nv            # number of variables
+    clauses = cnf.clauses
+    print(clauses)
     mgr, var_of, f, n = build_bdd(path)
     print("nodes:", f.node_count())
     print("valid configurations:", f.sat_count(n))
+    
