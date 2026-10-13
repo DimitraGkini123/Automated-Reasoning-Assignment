@@ -63,17 +63,30 @@ def encode_id(node_id, variables):
 
     return representation
 
-# ==================================================== BDD CREATION ???? ==================================================== #
+#Ksekinaw apo 0 se 4
+#To kanw apo 0000 se 0101
+#se NOTx0 NOTx1 NOTx2 NOTx3 se NOTy0 y1 NOTy2 y3
+#se 1 string !x0!x1!x2!x3!y0y1!y2y3
+
+# ==================================================== BDD CREATION ==================================================== #
 
 transition_bdd = None
 
-for source, target in zip(edges_df["source"], edges_df["target"]): #Me to zip exw pixi ((0), (5))
-    transition = encode_id(source, source_vars) & encode_id(target, target_vars) #twra exw ((0000000000000000), (00000000101))
-
+for source, target in zip(edges_df["source"], edges_df["target"]): #Me to zip exw pixi ((0), (4))
+    transition = (encode_id(source, source_vars) & encode_id(target, target_vars)) #!x0!x1!x2!x3!y0y1!y2y3
+    
     if transition_bdd is None:
         transition_bdd = transition
     else:
-        transition_bdd = transition_bdd | transition # OR kai oxi AND giati eimai anapofasistos (stin tyxh mphke)
+        transition_bdd = transition_bdd | transition # OR 
 
-#THEWRITIKA twra exw ena prama trans_bdd = OR TRANS(source,target)(x0,......,y0,........) gia kathe value
-#einai auto bdd? den kserw.... den einai, apla exw ftiaksei ola ta transitions poy mporei na ginoyn
+# Transition BDD = (X0....Y0...) OR (X0....Y0....) OR ......... EXOUME 19 VARIABLES SE SEIRA X0....X8Y0...Y8 KAI OLOUS TOUS SYNDYASMOUS POY BGAZEI TRUE
+
+# ==================================================== BDD VISUALIZATON ==================================================== #
+
+manager.visualize_with_names(
+    "test_graph",
+    [
+        (transition_bdd, "transition_bdd")
+    ]
+)
