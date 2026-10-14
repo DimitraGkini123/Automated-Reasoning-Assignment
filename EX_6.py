@@ -172,14 +172,14 @@ while True:
 
     counter += 1
 
-    post_y = (reachable_x & transition_bdd).exists(source_quantifier) 
+    new_y = (reachable_x & transition_bdd).exists(source_quantifier) 
     #Me to exists afairoume apo to (rx AND tbdd) to sq, diladi ola ta x kai maw menei monoo to y
     #DILADI post_y = ta yo...yn toy KATHE target node, DILADI PIXI POST_Y = {1,2,3,4} = {(001),(010),(011),(100)}
 
-    post_x = (post_y & equality_bdd).exists(target_quantifier)
+    new_x = (new_y & equality_bdd).exists(target_quantifier)
     #me basei to equality_bdd poy x0=y0 klpklp AFAIRW ta y0...yn poy brika prin kai katalligo me OLA ta x poy psaxnw
 
-    new_reachable_x = reachable_x | post_x
+    new_reachable_x = reachable_x | new_x
 
     if new_reachable_x == reachable_x:
         break
@@ -201,3 +201,72 @@ print(f"Reachable nodes: {num_reachable}")
 print(f"Unreachable nodes: {num_nodes - num_reachable}")
 
 # ==================================================== END OF B ==================================================== #
+
+# ==================================================== START OF C ==================================================== #
+
+# ==================================================== LABEL 1 KAI LABEL 0 ==================================================== #
+
+label0_y = None #Ola ta nodes me label 0
+label1_y = None #Ola ta nodes me label 1
+
+for node_id, label in zip(nodes_df["id"], nodes_df["label"]):
+
+    if int(label) == 0:
+        if label0_y is None:
+            label0_y = encode_id(int(node_id), target_vars)
+        else:
+            label0_y = label0_y | encode_id(int(node_id), target_vars)
+
+    else:
+        if label1_y is None:
+            label1_y = encode_id(int(node_id), target_vars)
+        else:
+            label1_y = label1_y | encode_id(int(node_id), target_vars)
+
+
+# ==================================================== ALTERNATING LABEL REACHABILITY ==================================================== #
+
+reachable_even_x = encode_id(start_node, source_vars)
+reachable_odd_x = reachable_even_x & ~reachable_even_x
+
+counter = 0
+
+while True:
+
+    counter += 1
+
+    new_odd_y = ((reachable_even_x & transition_bdd).exists(source_quantifier) & label1_y)
+    #Same as before, alla to conjuction me to label1 krataei mesa sto new_odd_y osa nodes exoyn label 1
+
+    new_odd_x = (new_odd_y & equality_bdd).exists(target_quantifier)
+    #Same as before
+
+    new_even_y = ((reachable_odd_x & transition_bdd).exists(source_quantifier)& label0_y)
+    #Same as before, alla to conjuction me to label0 krataei mesa sto new_odd_y osa nodes exoyn label 0
+
+    new_even_x = (new_even_y & equality_bdd).exists(target_quantifier)
+    #Same as before
+
+    new_reachable_even_x = reachable_even_x | new_even_x
+    new_reachable_odd_x = reachable_odd_x | new_odd_x
+
+    if (new_reachable_even_x == reachable_even_x and new_reachable_odd_x == reachable_odd_x):
+        break
+
+    reachable_even_x = new_reachable_even_x
+    reachable_odd_x = new_reachable_odd_x
+
+
+# ==================================================== COUNT REACHABLE + UNREACHABLE NODES ==================================================== #
+
+alternating_reachable_x = reachable_even_x | reachable_odd_x
+
+num_alternating_reachable = alternating_reachable_x.sat_count(num_bits)
+
+print("\n\nAlternating-label reachability")
+print("------------------------------")
+print(f"Starting node: {start_node}")
+print(f"Reachable nodes: {num_alternating_reachable}")
+print(f"Unreachable nodes: {num_nodes - num_alternating_reachable}")
+
+# ==================================================== END OF C ==================================================== #
