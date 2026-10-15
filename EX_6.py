@@ -7,6 +7,15 @@ from oxidd import bdd
 NODES_FILE = "C:/Users/user/Downloads/graphs/congress_nodes.csv"
 EDGES_FILE = "C:/Users/user/Downloads/graphs/congress_edges.csv"
 
+# NODES_FILE = "C:/Users/user/Downloads/graphs/pokec-small_nodes.csv"
+# EDGES_FILE = "C:/Users/user/Downloads/graphs/pokec-small_edges.csv"
+
+# NODES_FILE = "C:/Users/user/Downloads/graphs/pokec-medium_nodes.csv"
+# EDGES_FILE = "C:/Users/user/Downloads/graphs/pokec-medium_edges.csv"
+
+# NODES_FILE = "C:/Users/user/Downloads/graphs/pokec_nodes.csv"
+# EDGES_FILE = "C:/Users/user/Downloads/graphs/pokec_edges.csv"
+
 nodes_df = pd.read_csv(NODES_FILE, sep=r"\s+")
 edges_df = pd.read_csv(EDGES_FILE, sep=r"\s+")
 
@@ -36,7 +45,7 @@ print(f"Bits per node ID: {num_bits}")
 
 variable_names = ([f"x{i}" for i in range(num_bits)] + [f"y{i}" for i in range(num_bits)])
 
-manager = bdd.BDDManager(1_000_000, 100_000, 4)
+manager = bdd.BDDManager(100_000_000, 10_000_000, 4)
 manager.add_named_vars(variable_names) #Den einai int, ara vazw to named
 
 source_vars = [manager.var(i) for i in range(num_bits)] #0 me 8
@@ -206,23 +215,8 @@ print(f"Unreachable nodes: {num_nodes - num_reachable}")
 
 # ==================================================== LABEL 1 KAI LABEL 0 ==================================================== #
 
-label0_y = None #Ola ta nodes me label 0
-label1_y = None #Ola ta nodes me label 1
-
-for node_id, label in zip(nodes_df["id"], nodes_df["label"]):
-
-    if int(label) == 0:
-        if label0_y is None:
-            label0_y = encode_id(int(node_id), target_vars)
-        else:
-            label0_y = label0_y | encode_id(int(node_id), target_vars)
-
-    else:
-        if label1_y is None:
-            label1_y = encode_id(int(node_id), target_vars)
-        else:
-            label1_y = label1_y | encode_id(int(node_id), target_vars)
-
+label0_y = (label_bdds[0] & equality_bdd).exists(source_quantifier)
+label1_y = (label_bdds[1] & equality_bdd).exists(source_quantifier)
 
 # ==================================================== ALTERNATING LABEL REACHABILITY ==================================================== #
 
