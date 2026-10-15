@@ -1,11 +1,11 @@
 from z3 import *
 
-Maximum_Iterations = 36 #Se kathe iteration to a = a+5 minimum, ara 1+5n=180, ara n=(180-1)/5
+Maximum_Iterations = 36 #Maximum Number of Iterations
 
 a = [Int(f"a{i}") for i in range (Maximum_Iterations + 1)] 
 b = [Int(f"b{i}") for i in range (Maximum_Iterations + 1)] 
 
-nondent = [Bool(f"nondent{i}") for i in range (Maximum_Iterations)] #Non deterministic boolean var
+nondent = [Bool(f"nondent{i}") for i in range (Maximum_Iterations)] #Non deterministic boolean variable
 
 for k in range(11):
 
@@ -14,45 +14,44 @@ for k in range(11):
     s.add(a[0] == 1)
     s.add(b[0] == 1)
 
-#------------While Loop-------------#
+    for i in range(Maximum_Iterations): # It runs for 36 iterations and produces one of 3 states; true, false, terminated
+        
+        True_nondent = And(a[i+1] == a[i] + 2* (b[i] + 3) , b[i+1] == b[i] + 3) #True Branch
 
-    for i in range(Maximum_Iterations): # Trexei panta 36 fores kai exei "3 states". true, false, terminated (Den mporesa na vrw tropo na kanw kalo while loop)
+        False_nondent = And(a[i+1] == a[i] +5 , b[i+1] == b[i] + a[i]) #False Branch
 
-        True_nondent = And(a[i+1] == a[i] + 2* (b[i] + 3) , b[i+1] == b[i] + 3)
-
-        False_nondent = And(a[i+1] == a[i] +5 , b[i+1] == b[i] + a[i])
-
-        Terminated = And (a[i+1] == a[i], b[i+1] == b[i])
+        Terminated = And (a[i+1] == a[i], b[i+1] == b[i]) #Terminated Branch = No change
 
         s.add(If( a[i] < 180, If(nondent[i], True_nondent, False_nondent), Terminated)) 
-        #Les an a<180 true alliws false. To false einai to terminated state kai to true state, analoga me to nondent kanei eite to true eite to false path
-        #Den to kanw me if a>180 break, giati a kai b einai Z3_Int, to opoio apoti fainetai einai diaforetiko tou aplou int
+        #If a < 180 True, else False.
+        #False represents the terminated state
+        #True represents that one of the 2 possible changes of var a and var b happen (based on value of nondent)
 
-
-    s.add(a[Maximum_Iterations] >= 180)     #Elgxoume an eimaste enots tou loop
-    s.add(b[Maximum_Iterations] == 190 + k) 
+    s.add(a[Maximum_Iterations] >= 180)     #Check if we are still within the loop
+    s.add(b[Maximum_Iterations] == 190 + k) #Add the constraint we are checking for 
 
     if s.check() == sat: 
 
         m = s.model()
 
-        Choices = []    #Kratame to pote to nondent dinei T kai F
-        Values = []     #Kratame ta ai kai bi gia na paroyme tis telikes times kai na sygkrinoume me 190+k
+        Choices = []    #List to store T or F values of nondent for every case iteration
+        Values = []     #List to store values of a and b in order to comapre with 190 + k
 
-        for i in range(Maximum_Iterations): #kratame times ai kai bi otan mas noizei
-            a_i = m.eval(a[i]).as_long()    #Den eixa empneysi gia onoma variable
-            b_i = m.eval(b[i]).as_long()    #TO .AS_LONG METATREPEI TO Z3 INT SE REAL INT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        for i in range(Maximum_Iterations): 
+            a_i = m.eval(a[i]).as_long()    #Convert a_i from Z3 int to Python int
+            b_i = m.eval(b[i]).as_long()    #Convert b_i from Z3 int to Python int
 
             if a_i >= 180:
-                Values.append((a_i,b_i))
+                Values.append((a_i,b_i)) #Store values of a and b before the break - the final values of a and b
                 break
 
-            Values.append((a_i,b_i))  #apothikevw ola ta values gia na deiksw to "provide one complete run leading to that crash" 
+            Values.append((a_i,b_i))   #Store values of a and b 
 
-            if is_true(m.eval(nondent[i])): #TO IS_TRUE KANEI TO Z3 TRUE SE PYTHON TRUE
-                Choices.append("True")
+            if is_true(m.eval(nondent[i])): #Convert Z3 True to Python True
+                Choices.append("True") #Store value of nondent
             else:
-                Choices.append("False")
+                Choices.append("False") #Store value of nondent
+
 
         print("For k = ", k, " : ! CRASH !")
         print("Choises: ",Choices)
