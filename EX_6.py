@@ -4,17 +4,17 @@ from oxidd import bdd
 
 # ==================================================== Extract Data from .csv Files ==================================================== #
 
-NODES_FILE = "C:/Users/user/Downloads/graphs/congress_nodes.csv"
-EDGES_FILE = "C:/Users/user/Downloads/graphs/congress_edges.csv"
+NODES_FILE = "congress_nodes.csv"
+EDGES_FILE = "congress_edges.csv"
 
-# NODES_FILE = "C:/Users/user/Downloads/graphs/pokec-small_nodes.csv"
-# EDGES_FILE = "C:/Users/user/Downloads/graphs/pokec-small_edges.csv"
+# NODES_FILE = "pokec-small_nodes.csv"
+# EDGES_FILE = "pokec-small_edges.csv"
 
-# NODES_FILE = "C:/Users/user/Downloads/graphs/pokec-medium_nodes.csv"
-# EDGES_FILE = "C:/Users/user/Downloads/graphs/pokec-medium_edges.csv"
+# NODES_FILE = "pokec-medium_nodes.csv"
+# EDGES_FILE = "pokec-medium_edges.csv"
 
-# NODES_FILE = "C:/Users/user/Downloads/graphs/pokec_nodes.csv"
-# EDGES_FILE = "C:/Users/user/Downloads/graphs/pokec_edges.csv"
+# NODES_FILE = "pokec_nodes.csv"
+# EDGES_FILE = "pokec_edges.csv"
 
 nodes_df = pd.read_csv(NODES_FILE, sep=r"\s+")
 edges_df = pd.read_csv(EDGES_FILE, sep=r"\s+")
