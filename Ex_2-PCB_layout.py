@@ -22,9 +22,24 @@ w = [Int(f"w{i}") for i in range(chips)]      # width of chip i
 h = [Int(f"h{i}") for i in range(chips)]      # height of chip i
 
 s = Solver()
-#s = Optimize()
 
 # Constraints
+
+# Chips should not overlap with each other, only when they are on the same PCB
+for i in range(chips):
+    for j in range(i+1, chips):
+        s.add(Or(p[i] != p[j], 
+              x[i] + w[i] <= x[j], x[j] + w[j] <= x[i], 
+              y[i] + h[i] <= y[j], y[j]+ h[j] <= y[i]))
+
+
+# The centers of hot chips should be 20 units apart from each other when on the same PCB
+for a in range(len(hot_chips)):
+    for b in range(a+1, len(hot_chips)):
+        i, j = hot_chips[a], hot_chips[b]
+        s.add(Or(p[i] != p[j],
+                 abs(x[i] + w[i]/2 - x[j] - w[j]/2) >= 20, 
+                 abs(y[i] + h[i]/2 - y[j] - h[j]/2) >= 20))
 
 # Chips may be rotated by 90 degrees, so the width can take the value of the height and vice versa
 for i in range(chips):
@@ -44,81 +59,64 @@ for i in range(chips):
                 Or(x[i] >= WB2, y[i] >= HB2),
                 Or(x[i] + w[i] <= W2 - WC1, y[i] + h[i] <= H2 - HC1))))
 
-# # For question (b), 2 cameras are in PCB2 and 0 cameras are in PCB1
-#    s.add(Or(p[i], 
-#             And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
-#                 Or(x[i] >= WB1, y[i] >= HB1))))
-#    s.add(Or(Not(p[i]),
-#             And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
-#                 Or(x[i] >= WB2, y[i] >= HB2),
-#                 Or(x[i] + w[i] <= W2 - WC2, y[i] + h[i] <= H2 - HC2))))
+# For question (b), 2 cameras are in PCB2 and 0 cameras are in PCB1
+   s.add(Or(p[i], 
+            And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
+                Or(x[i] >= WB1, y[i] >= HB1))))
+   s.add(Or(Not(p[i]),
+            And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
+                Or(x[i] >= WB2, y[i] >= HB2),
+                Or(x[i] + w[i] <= W2 - WC2, y[i] + h[i] <= H2 - HC2))))
    
-# # For question (b), 1 camera is in PCB2 and 1 camera is in PCB1
-#    s.add(Or(p[i],
-#             And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
-#                 Or(x[i] >= WB1, y[i] >= HB1),
-#                 Or(x[i] + w[i] <= W1 - WC1, y[i] + h[i] <= H1 - HC1))))
-#    s.add(Or(Not(p[i]),
-#             And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
-#                 Or(x[i] >= WB2, y[i] >= HB2),
-#                 Or(x[i] + w[i] <= W2 - WC1, y[i] + h[i] <= H2 - HC1))))
+# For question (b), 1 camera is in PCB2 and 1 camera is in PCB1
+   s.add(Or(p[i],
+            And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
+                Or(x[i] >= WB1, y[i] >= HB1),
+                Or(x[i] + w[i] <= W1 - WC1, y[i] + h[i] <= H1 - HC1))))
+   s.add(Or(Not(p[i]),
+            And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
+                Or(x[i] >= WB2, y[i] >= HB2),
+                Or(x[i] + w[i] <= W2 - WC1, y[i] + h[i] <= H2 - HC1))))
 
-# # For question (c), 4 cameras are in PCB2 and 0 camera is in PCB1
-#    s.add(Or(p[i], 
-#             And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
-#                 Or(x[i] >= WB1, y[i] >= HB1))))
-#    s.add(Or(Not(p[i]),
-#             And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
-#                 Or(x[i] >= WB2, y[i] >= HB2),
-#                 Or(x[i] + w[i] <= W2 - WC3, y[i] + h[i] <= H2 - HC3))))
+# For question (c), 4 cameras are in PCB2 and 0 camera is in PCB1
+   s.add(Or(p[i], 
+            And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
+                Or(x[i] >= WB1, y[i] >= HB1))))
+   s.add(Or(Not(p[i]),
+            And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
+                Or(x[i] >= WB2, y[i] >= HB2),
+                Or(x[i] + w[i] <= W2 - WC3, y[i] + h[i] <= H2 - HC3))))
 
-# # For question (c), 3 cameras are in PCB2 and 1 cameras are in PCB1
-#    s.add(Or(p[i],
-#             And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
-#                 Or(x[i] >= WB1, y[i] >= HB1),
-#                 Or(x[i] + w[i] <= W1 - WC1, y[i] + h[i] <= H1 - HC1))))
-#    s.add(Or(Not(p[i]),
-#             And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
-#                 Or(x[i] >= WB2, y[i] >= HB2),
-#                 Or(x[i] + w[i] <= W2 - WC2 - WC1, y[i] + h[i] <= H2 - HC1))))
+# For question (c), 3 cameras are in PCB2 and 1 cameras are in PCB1
+   s.add(Or(p[i],
+            And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
+                Or(x[i] >= WB1, y[i] >= HB1),
+                Or(x[i] + w[i] <= W1 - WC1, y[i] + h[i] <= H1 - HC1))))
+   s.add(Or(Not(p[i]),
+            And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
+                Or(x[i] >= WB2, y[i] >= HB2),
+                Or(x[i] + w[i] <= W2 - WC2 - WC1, y[i] + h[i] <= H2 - HC1))))
 
-# # For question (c), 2 cameras are in PCB2 and 2 camera is in PCB1
-#    s.add(Or(p[i],
-#             And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
-#                 Or(x[i] >= WB1, y[i] >= HB1),
-#                 Or(x[i] + w[i] <= W1 - WC2, y[i] + h[i] <= H1 - HC2))))
-#    s.add(Or(Not(p[i]),
-#             And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
-#                 Or(x[i] >= WB2, y[i] >= HB2),
-#                 Or(x[i] + w[i] <= W2 - WC2, y[i] + h[i] <= H2 - HC2))))
+# For question (c), 2 cameras are in PCB2 and 2 camera is in PCB1
+   s.add(Or(p[i],
+            And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
+                Or(x[i] >= WB1, y[i] >= HB1),
+                Or(x[i] + w[i] <= W1 - WC2, y[i] + h[i] <= H1 - HC2))))
+   s.add(Or(Not(p[i]),
+            And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
+                Or(x[i] >= WB2, y[i] >= HB2),
+                Or(x[i] + w[i] <= W2 - WC2, y[i] + h[i] <= H2 - HC2))))
 
-# # For question (c), 1 camera is in PCB2 and 3 cameras are in PCB1
-#    s.add(Or(p[i],
-#             And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
-#                 Or(x[i] >= WB1, y[i] >= HB1),
-#                 Or(x[i] + w[i] <= W1 - WC2 - WC1, y[i] + h[i] <= H1 - HC2))))
-#    s.add(Or(Not(p[i]),
-#             And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
-#                 Or(x[i] >= WB2, y[i] >= HB2),
-#                 Or(x[i] + w[i] <= W2 - WC1, y[i] + h[i] <= H2 - HC1))))
+# For question (c), 1 camera is in PCB2 and 3 cameras are in PCB1
+   s.add(Or(p[i],
+            And(x[i] + w[i] <= W1, y[i] + h[i] <= H1,
+                Or(x[i] >= WB1, y[i] >= HB1),
+                Or(x[i] + w[i] <= W1 - WC2 - WC1, y[i] + h[i] <= H1 - HC2))))
+   s.add(Or(Not(p[i]),
+            And(x[i] + w[i] <= W2, y[i] + h[i] <= H2, 
+                Or(x[i] >= WB2, y[i] >= HB2),
+                Or(x[i] + w[i] <= W2 - WC1, y[i] + h[i] <= H2 - HC1))))
 
-
-   
-# Chips should not overlap with each other, only when they are on the same PCB
-for i in range(chips):
-    for j in range(i+1, chips):
-        s.add(Or(p[i] != p[j], 
-              x[i] + w[i] <= x[j], x[j] + w[j] <= x[i], 
-              y[i] + h[i] <= y[j], y[j]+ h[j] <= y[i]))
-
-
-# The centers of hot chips should be 20 units apart from each other when on the same PCB
-for a in range(len(hot_chips)):
-    for b in range(a+1, len(hot_chips)):
-        i, j = hot_chips[a], hot_chips[b]
-        s.add(Or(p[i] != p[j],
-                 abs(x[i] + w[i]/2 - x[j] - w[j]/2) >= 20, 
-                 abs(y[i] + h[i]/2 - y[j] - h[j]/2) >= 20))
 
 print(s.check())
 
