@@ -52,7 +52,7 @@ while True:
         s.add(Implies(P[i] == "S", d[i] == 0)) #EBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALAEBALA
         #s.add(Implies(Tr[i] == 0, d[i] == 0))
 
-    L = Int("L")
+
         #cost of each trip 
     for i in range(T):
         #allowed routes
