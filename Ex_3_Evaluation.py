@@ -65,7 +65,6 @@ for i in range(T):
     s.add(Implies(And(P[i] == "C", P[i+1] == "S"), travel[i] == 15))
     s.add(Implies(And(P[i] == "C", P[i+1] == "A"), travel[i] == 12))  
     s.add(Implies(And(P[i] == "C", P[i+1] == "B"), travel[i] == 9))
-
     #from B
     s.add(Implies(And(P[i] == "B", P[i+1] == "C"), travel[i] == 13))
     s.add(Implies(And(P[i] == "B", P[i+1] == "A"), travel[i] == 17))
