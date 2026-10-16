@@ -1,6 +1,6 @@
 from z3 import *
 #time limit
-T = 25
+T = 40
 #define each village as a list with the time as the parameter
 A = [Int(f"A_{t}") for t in range(T + 1)]
 B = [Int(f"B_{t}") for t in range(T + 1)]
@@ -91,4 +91,27 @@ for i in range(T):
     s.add(Implies(P[i+1] == "S", And (  A[i+1] == A[i] - travel[i],  B[i+1] == B[i] - travel[i],  C[i+1] == C[i] - travel[i],Tr[i+1] == 130)) )
 
 print(s.check())
-    
+
+
+##(b) truck limit is 150
+
+
+s.add(And(Tr[i] >= 0, Tr[i] <= 150))
+
+#add the caps ( for villages and truck )
+for i in range(T+1):
+    s.add(And(A[i] >= 0, A[i] <= 90))
+    s.add(And(B[i] >= 0, B[i] <= 120))
+    s.add(And(C[i] >= 0, C[i] <= 90))
+    s.add(And(Tr[i] >= 0, Tr[i] <= 150))
+
+
+#Cycle detection--> I want to show that at some point we will return to the same situation. All villages will have the same ammount of products and the truck also.
+cycles = []
+
+for i in range (T):
+    for j in range(i+1, T+1):
+       cycles.append(And ( A[i] == A[j] , B[i] == B[j] , C[i] == C[j], Tr[i] == Tr[j], P[i] == P[j]))
+
+s.add(Or(cycles))
+print(s.check())
